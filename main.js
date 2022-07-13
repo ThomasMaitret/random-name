@@ -2,6 +2,7 @@ import "./style.css";
 
 import * as cheerio from "cheerio";
 import prenomsJson from "./prenoms.json";
+import axios from "axios";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -16,8 +17,8 @@ const URLS = {
 };
 
 async function get(url) {
-  const response = await fetch(url, { mode: "no-cors" });
-  return await response.text();
+  const response = await axios.get(url);
+  return response.data;
 }
 
 function getFirstname() {
@@ -53,8 +54,7 @@ async function getJob() {
 
 async function getPicture() {
   const res = await get(URLS.picture);
-  const json = await JSON.parse(res);
-  return json.results[0].picture.large;
+  return res.results[0].picture.large;
 }
 
 async function getUserData() {
