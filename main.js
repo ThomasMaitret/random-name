@@ -3,20 +3,32 @@ import "./style.css";
 import * as cheerio from "cheerio";
 import prenomsJson from "./prenoms.json";
 
+const isProd = process.env.NODE_ENV === "production";
+
+const URLS = {
+  nom: isProd ? "https://nomsdefamille.net/france" : "/name",
+  metier: isProd
+    ? "https://fr.wikimini.org/wiki/Liste_des_m%C3%A9tiers"
+    : "/job",
+  picture: isProd
+    ? "https://randomuser.me/api?gender=male&inc=gender,picture&noinfo"
+    : "/picture",
+};
+
 async function get(url) {
   const response = await fetch(url);
   return await response.text();
 }
 
-function getPrenom() {
+function getFirstname() {
   const prenoms = prenomsJson
     .filter((el) => el.fields.sexe === "M")
     .map((object) => object.fields.prenoms);
   return prenoms[Math.floor(Math.random() * prenoms.length)];
 }
 
-async function getNom() {
-  const res = await get("/noms");
+async function getLastname() {
+  const res = await get(URLS.nom);
   const $ = cheerio.load(res);
   const noms = [];
 
@@ -27,8 +39,8 @@ async function getNom() {
   return noms[Math.floor(Math.random() * noms.length)];
 }
 
-async function getMetier() {
-  const res = await get("/metiers");
+async function getJob() {
+  const res = await get(URLS.metier);
   const $ = cheerio.load(res);
 
   const metiers = [];
@@ -40,23 +52,23 @@ async function getMetier() {
 }
 
 async function getPicture() {
-  const res = await get("/picture");
+  const res = await get(URLS.picture);
   const json = await JSON.parse(res);
   return json.results[0].picture.large;
 }
 
 async function getUserData() {
-  const [prenom, nom, metier] = await Promise.all([
-    getPrenom(),
-    getNom(),
-    getMetier(),
+  const [firstname, lastname, job] = await Promise.all([
+    getFirstname(),
+    getLastname(),
+    getJob(),
   ]);
-  return { prenom, nom, metier };
+  return { firstname, lastname, job };
 }
 
-getUserData().then(async ({ prenom, nom, metier }) => {
+getUserData().then(async ({ firstname, lastname, job }) => {
   document.querySelector("#app").innerHTML = `
-  <h1>${prenom} ${nom}, ${metier}</h1>
+  <h1>${firstname} ${lastname}, ${job}</h1>
   <img id="picture" loading="lazy" />
   `;
 
