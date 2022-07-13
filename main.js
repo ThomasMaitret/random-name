@@ -17,7 +17,11 @@ const URLS = {
 };
 
 async function get(url) {
-  const response = await axios.get(url);
+  const response = await axios.get(url, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
   return response.data;
 }
 

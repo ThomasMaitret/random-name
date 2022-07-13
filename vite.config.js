@@ -23,5 +23,8 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/picture/, ""),
       },
     },
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
   },
 });
