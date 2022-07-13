@@ -16,7 +16,7 @@ const URLS = {
 };
 
 async function get(url) {
-  const response = await fetch(url);
+  const response = await fetch(url, { mode: "no-cors" });
   return await response.text();
 }
 
